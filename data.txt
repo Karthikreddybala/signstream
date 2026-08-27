@@ -1,0 +1,64 @@
+Completed
+Added configurable manifest, gemini, and openai providers in backend/app/llm.py:112.
+Gemini/OpenAI keys remain server-side and are configured through .env.
+Structured JSON gloss responses are used, matching the providers’ structured-output APIs: OpenAI Responses and Gemini structured output.
+Added manifest validation so unknown glosses are reported instead of requesting missing motion files.
+Preserved ordered/repeated gloss playback through the existing avatar queue.
+Added TXT, DOCX, PDF extraction and secure upload validation in backend/app/input_processing.py.
+Image files are validated; OCR is not enabled yet.
+Speech permission remains browser-controlled; speech-to-text is not yet implemented.
+Improved finger retargeting by using actual VRM rest geometry and hand-local coordinate axes in frontend/src/animation/HandPoseCorrector.js:168.
+Body mapping and the existing animation architecture were not replaced.
+Added default-off landmark debugging switch at frontend/src/debug/LandmarkSkeletonOverlay.js:3:
+export const DEBUG_LANDMARKS = false;
+Change it to true to display landmarks.
+Configuration
+Copy-Item .env.example .env
+notepad .env
+Use one provider:
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=your_key
+GEMINI_MODEL=gemini-2.5-flash
+or:
+LLM_PROVIDER=openai
+OPENAI_API_KEY=your_key
+OPENAI_MODEL=gpt-4o-mini
+The default LLM_PROVIDER=manifest requires no API key.
+Commands
+.\bs\Scripts\python.exe -m pip install -r backend\requirements.txt
+Set-Location frontend
+npm ci
+Run backend:
+.\bs\Scripts\python.exe -m uvicorn app.main:app --reload --app-dir backend --port 8000
+Run frontend:
+Set-Location frontend
+npm run dev
+Run tests:
+.\bs\Scripts\python.exe -m pytest -q backend converter\tests
+Test text translation:
+curl.exe -X POST http://localhost:8000/api/translate/text `
+  -H "Content-Type: application/json" `
+  -d "{\"text\":\"book drink book\",\"language\":\"en\"}"
+Test document upload:
+curl.exe -F "file=@sample.txt" http://localhost:8000/api/translate/document
+Production build:
+Set-Location frontend
+npm run lint
+npm run build
+Set-Location ..
+docker compose up --build
+Validation
+Backend and converter tests: 9 passed.
+Frontend lint: passed.
+Frontend production build: passed.
+Mocked Gemini/OpenAI provider tests: passed.
+Upload rejection and unknown-gloss tests: passed.
+Finger landmark mapping test: passed.
+Remaining limitations are OCR, speech-to-text, exported video rendering, and database migrations.
+
+Edited 19 files+616-52Review changesUndoReview
+
+.env.example.env.example+7-0
+.gitignore.gitignore+11-0
+README.mdREADME.md+28-0
+Show 16 more files

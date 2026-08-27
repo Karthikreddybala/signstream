@@ -1,0 +1,113 @@
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Python caches, virtual environments, and packaging output
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+ENV/
+bs/
+build/
+dist/
+*.egg-info/
+
+# Python test and type-checker output
+.pytest_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.ipynb_checkpoints/
+
+# JavaScript dependencies and build output
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data and generated pipeline output
+*.db
+*.sqlite
+*.sqlite3
+backend/uploads/
+backend/output/
+backend/temp/
+backend/cache/
+backend/generated/
+converter/recordings/
+converter/output/
+
+# Generated motion assets and large archives
+frontend/public/motion/
+frontend/public/motion.zip
+
+# Logs and temporary files
+logs/
+*.log
+*.out
+*.err
+*.tmp
+*.bak
+*.swp
+*.swo
+*.orig
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor and IDE files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Media exports and local model files
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.engine
+*.trt
+*.safetensors
+
+# Archives and local certificates/keys
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.pem
+*.key
+*.crt
+
+# Preserve intentionally committed directory markers
+!**/.gitkeep

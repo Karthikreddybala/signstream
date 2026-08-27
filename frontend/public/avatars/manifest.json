@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "avatars": [
+    {
+      "id": "avatar",
+      "name": "Avatar",
+      "path": "/avatar.vrm",
+      "description": "VRM avatar from your SignStream library"
+    },
+    {
+      "id": "avatar2",
+      "name": "Avatar2",
+      "path": "/avatar2.vrm",
+      "description": "VRM avatar from your SignStream library"
+    },
+    {
+      "id": "avatarsample-e",
+      "name": "AvatarSample E",
+      "path": "/AvatarSample_E.vrm",
+      "description": "VRM avatar from your SignStream library"
+    }
+  ]
+}
