@@ -25,6 +25,15 @@ function getStoredBackgroundTheme() {
     }
 }
 
+function getStoredSpeed() {
+    try {
+        const value = Number(window.localStorage.getItem("signstream-speed"));
+        return Number.isFinite(value) && value >= 0.1 && value <= 3 ? value : 1;
+    } catch {
+        return 1;
+    }
+}
+
 function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = true, streamSequence = false, onReady, onSequenceChange }) {
     const DEFAULT_ZOOM = 3.4;
     const containerRef = useRef(null);
@@ -32,7 +41,7 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
     const engineRef = useRef(null);
     const [status, setStatus] = useState("Preparing avatar");
     const [ready, setReady] = useState(false);
-    const [speed, setSpeed] = useState(1);
+    const [speed, setSpeed] = useState(() => getStoredSpeed());
     const [cameraView, setCameraView] = useState("threeQuarter");
     const [zoom, setZoom] = useState(DEFAULT_ZOOM);
     const [avatarPosition, setAvatarPosition] = useState({ x: 0, y: 0, z: 0 });
@@ -171,6 +180,11 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
         const value = Number(event.target.value);
         setSpeed(value);
         engineRef.current?.getControls()?.setSpeed?.(value);
+        try {
+            window.localStorage.setItem("signstream-speed", String(value));
+        } catch {
+            // Private browsing can deny storage; the in-memory value remains active.
+        }
     };
 
     const handleZoom = (event) => {

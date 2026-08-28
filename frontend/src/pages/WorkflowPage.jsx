@@ -82,6 +82,7 @@ function WorkflowPage({ kind }) {
     const [recordedSession, setRecordedSession] = useState(null);
     const [mp4Session, setMp4Session] = useState(null);
     const [convertingMp4, setConvertingMp4] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     const setRecordingFlag = (value) => {
         recordingActiveRef.current = value;
@@ -116,7 +117,20 @@ function WorkflowPage({ kind }) {
         setActiveGloss(gloss ?? "");
     }, []);
 
-    const handleFile = (event) => setFile(event.target.files?.[0] ?? null);
+    const handleFile = (event) => {
+        setFile(event.target.files?.[0] ?? null);
+        setMessage("");
+    };
+
+    const handleDrop = (event) => {
+        event.preventDefault();
+        setIsDragging(false);
+        const droppedFile = event.dataTransfer.files?.[0];
+        if (droppedFile) {
+            setFile(droppedFile);
+            setMessage("");
+        }
+    };
 
     const appendLiveGlosses = (glosses) => {
         const nextGlosses = glosses.filter((gloss) => typeof gloss === "string" && gloss.trim());
@@ -428,7 +442,7 @@ function WorkflowPage({ kind }) {
                     ) : (
                         <>
                             <input ref={fileRef} className="visually-hidden" type="file" accept={config.accept} onChange={handleFile} />
-                            <button className="dropzone" onClick={() => fileRef.current?.click()}>
+                            <button className={`dropzone ${isDragging ? "is-dragging" : ""}`} type="button" onClick={() => fileRef.current?.click()} onDragOver={(event) => { event.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop} aria-label={file ? `Selected file: ${file.name}` : "Choose a file or drag one here"}>
                                 <span className="dropzone-icon"><Upload size={20} /></span>
                                 <strong>{file ? file.name : "Choose a file or drop it here"}</strong>
                                 <small>{file ? `${Math.round(file.size / 1024)} KB ready` : config.accept.replaceAll(",", " · ")}</small>
@@ -439,7 +453,7 @@ function WorkflowPage({ kind }) {
                         </>
                     )}
                 </div>
-                <div className="panel-card workflow-status-card">
+                <div className="panel-card workflow-status-card" aria-live="polite">
                     <div className="panel-heading">
                         <div>
                             <span className="eyebrow">Workflow status</span>

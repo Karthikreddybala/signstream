@@ -12,12 +12,6 @@
       "name": "Avatar2",
       "path": "/avatar2.vrm",
       "description": "VRM avatar from your SignStream library"
-    },
-    {
-      "id": "avatarsample-e",
-      "name": "AvatarSample E",
-      "path": "/AvatarSample_E.vrm",
-      "description": "VRM avatar from your SignStream library"
     }
   ]
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import {
     Activity,
-    BookOpen,
+    Bookmark,
     ChevronRight,
     CircleHelp,
     Clock3,
@@ -18,8 +18,7 @@ import {
     Settings,
     Sparkles,
     Sun,
-    UserRound,
-    Video
+    UserRound
 } from "lucide-react";
 
 const primaryNavigation = [
@@ -32,14 +31,16 @@ const primaryNavigation = [
 
 const libraryNavigation = [
     { label: "History", path: "/history", icon: Clock3 },
-    { label: "Saved videos", path: "/saved", icon: Video },
+    { label: "Saved translations", path: "/saved", icon: Bookmark },
     { label: "API status", path: "/status", icon: Activity }
 ];
 
 function AppShell() {
     const location = useLocation();
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(
+        () => localStorage.getItem("signstream-sidebar-collapsed") === "true"
+    );
     const [theme, setTheme] = useState(
         () => localStorage.getItem("signstream-theme") ?? "dark"
     );
@@ -50,7 +51,15 @@ function AppShell() {
     }, [theme]);
 
     useEffect(() => {
+        localStorage.setItem("signstream-sidebar-collapsed", String(collapsed));
+    }, [collapsed]);
+
+    useEffect(() => {
         setMobileOpen(false);
+    }, [location.pathname]);
+
+    useEffect(() => {
+        document.title = `${getPageName(location.pathname)} · SignStream`;
     }, [location.pathname]);
 
     const toggleTheme = () => {
@@ -59,6 +68,7 @@ function AppShell() {
 
     return (
         <div className={`app-shell ${collapsed ? "sidebar-collapsed" : ""}`}>
+            <a className="skip-link" href="#main-content">Skip to content</a>
             <button
                 className="mobile-backdrop"
                 aria-label="Close navigation"
@@ -120,7 +130,7 @@ function AppShell() {
                 </div>
             </aside>
 
-            <main className="main-shell">
+            <main className="main-shell" id="main-content" tabIndex="-1">
                 <header className="topbar">
                     <button
                         className="icon-button mobile-menu"
@@ -138,10 +148,9 @@ function AppShell() {
                         <button className="icon-button" onClick={toggleTheme} aria-label="Toggle theme">
                             {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
                         </button>
-                        <button className="notification-button" aria-label="Notifications">
-                            <span className="notification-dot" />
-                            <BookOpen size={18} />
-                        </button>
+                        <NavLink className="icon-button" to="/help" aria-label="Open help center" title="Help center">
+                            <CircleHelp size={18} />
+                        </NavLink>
                         <NavLink className="topbar-avatar" to="/profile">SA</NavLink>
                     </div>
                 </header>
