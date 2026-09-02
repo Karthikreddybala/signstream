@@ -15,6 +15,41 @@ except ImportError:  # pragma: no cover - keeps module usable as a package too
 DEFAULT_TARGET_FPS = 30.0
 
 
+def _crop_to_bbox(frame, bbox, margin=0.15):
+    """Return a padded signer crop when WLASL provides a valid pixel box.
+
+    Hand tracking is substantially more stable when the signer occupies more
+    of the detector input. A missing or malformed box deliberately falls back
+    to the original frame so existing callers keep their previous behavior.
+    """
+    if bbox is None or len(bbox) < 4:
+        return frame
+
+    try:
+        left, top, right, bottom = [float(value) for value in bbox[:4]]
+    except (TypeError, ValueError):
+        return frame
+
+    height, width = frame.shape[:2]
+    left, right = sorted((left, right))
+    top, bottom = sorted((top, bottom))
+    box_width = right - left
+    box_height = bottom - top
+    if box_width < 2 or box_height < 2:
+        return frame
+
+    padding_x = box_width * max(0.0, float(margin))
+    padding_y = box_height * max(0.0, float(margin))
+    crop_left = max(0, int(round(left - padding_x)))
+    crop_top = max(0, int(round(top - padding_y)))
+    crop_right = min(width, int(round(right + padding_x)))
+    crop_bottom = min(height, int(round(bottom + padding_y)))
+    if crop_right - crop_left < 2 or crop_bottom - crop_top < 2:
+        return frame
+
+    return frame[crop_top:crop_bottom, crop_left:crop_right]
+
+
 def _landmark_list_to_array(landmark_list, expected_length: int):
     frame = np.zeros((expected_length, 3), dtype=float)
 
@@ -59,6 +94,8 @@ def extract_landmark_sequences(
     target_fps: float = DEFAULT_TARGET_FPS,
     frame_stride: int | None = None,
     max_frames: int | None = None,
+    bbox=None,
+    bbox_margin: float = 0.15,
 ):
     video_path = Path(video_path)
 
@@ -123,7 +160,8 @@ def extract_landmark_sequences(
                 if frame_stride > 1 and (raw_frame_index - 1) % frame_stride != 0:
                     continue
 
-                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                detection_frame = _crop_to_bbox(frame, bbox, bbox_margin)
+                rgb_frame = cv2.cvtColor(detection_frame, cv2.COLOR_BGR2RGB)
                 rgb_frame.flags.writeable = False
 
                 pose_results = pose.process(rgb_frame)

@@ -78,3 +78,7 @@ The web app is served on port `80` and the API on port `8000`.
 ## Runtime assets
 
 The browser requires the generated files under `frontend/public/motion`. The default avatar is `frontend/public/avatar.vrm`; place additional `.vrm` files anywhere under `frontend/public` (preferably `frontend/public/avatars`) and run `npm run dev` or `npm run build` from `frontend`. The avatar catalog is regenerated automatically and the studio selector will make each file available to the user. The converter and raw source videos are offline pipeline assets and are not imported by the web application.
+
+## Fine-tuned motion coverage
+
+The full motion library remains one unified dataset under `frontend/public/motion`. The 200 selected glosses from `WLASL_top2.json` have been fine-tuned in place inside the normal `clips` and `landmarks` folders. The remaining library files and manifest entries are unchanged, so the application always loads the single full manifest at `/motion/manifest.json`.

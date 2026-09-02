@@ -20,7 +20,6 @@ function TranslatePage() {
     const [unknownGlosses, setUnknownGlosses] = useState([]);
     const [provider, setProvider] = useState("preview");
     const [inputError, setInputError] = useState("");
-
     const handleReady = useCallback(({ glosses: available, exportVideo: exportHandler }) => {
         setGlosses(available);
         setSelectedGloss((current) => current || available[0] || "");
