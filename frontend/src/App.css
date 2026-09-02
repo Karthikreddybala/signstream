@@ -506,8 +506,9 @@ body { overflow-x: hidden; }
 .avatar-stage-wrap.stage-theme-sunset { background: radial-gradient(circle at 50% 22%, rgba(255, 177, 130, .24), transparent 43%), linear-gradient(145deg, #60384d, #241c2e); }
 .avatar-stage-wrap.stage-theme-studio { background: radial-gradient(circle at 52% 20%, rgba(190, 164, 255, .25), transparent 43%), linear-gradient(145deg, #4d456b, #211f35); }
 .avatar-stage-wrap.stage-theme-paper { background: radial-gradient(circle at 52% 20%, rgba(255, 255, 255, .62), transparent 44%), linear-gradient(145deg, #e5eef4, #b8cbd8); }
-.avatar-stage-tools { position: absolute; top: 14px; left: 14px; z-index: 3; display: flex; align-items: center; gap: 8px; padding: 6px; color: rgba(236, 243, 253, .8); background: rgba(7, 13, 22, .62); border: 1px solid rgba(255, 255, 255, .12); border-radius: 10px; box-shadow: 0 12px 30px rgba(0, 0, 0, .16); backdrop-filter: blur(9px); }
+.avatar-stage-tools { position: absolute; top: 14px; left: 14px; z-index: 3; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 6px; color: rgba(236, 243, 253, .8); background: rgba(7, 13, 22, .62); border: 1px solid rgba(255, 255, 255, .12); border-radius: 10px; box-shadow: 0 12px 30px rgba(0, 0, 0, .16); backdrop-filter: blur(9px); }
 .avatar-stage-view-control, .avatar-stage-actions { display: flex; align-items: center; gap: 6px; }
+.avatar-stage-view-control + .avatar-stage-view-control { padding-left: 8px; border-left: 1px solid rgba(255, 255, 255, .12); }
 .avatar-stage-label { display: inline-flex; align-items: center; gap: 5px; padding: 0 4px; font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .avatar-view-buttons { display: flex; gap: 3px; }
 .avatar-view-button { min-height: 25px; padding: 0 8px; color: rgba(226, 235, 249, .64); background: transparent; border: 1px solid transparent; border-radius: 6px; font-size: 9px; font-weight: 650; transition: color .18s, background .18s, border-color .18s; }
@@ -547,7 +548,8 @@ body { overflow-x: hidden; }
     .auth-card { min-height: auto; }
     .auth-note { position: static; margin-top: 17px; }
     .auth-page { align-content: center; }
-    .avatar-stage-tools { right: 12px; left: 12px; justify-content: space-between; gap: 4px; }
+    .avatar-stage-tools { right: 12px; left: 12px; justify-content: flex-start; gap: 4px; }
+    .avatar-stage-actions { margin-left: auto; }
     .avatar-stage-label, .avatar-stage-hint { display: none; }
     .avatar-view-button { padding-inline: 6px; }
 }

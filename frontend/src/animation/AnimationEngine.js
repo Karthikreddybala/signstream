@@ -8,6 +8,7 @@ import PoseApplier from "./PoseApplier";
 import MotionPlayer from "./motionPlayer";
 import AnimationLoop from "./animationLoop";
 import LandmarkSkeletonOverlay from "../debug/LandmarkSkeletonOverlay";
+import LandmarkAvatar from "../components/landmark-avatar/LandmarkAvatar";
 import { Vector3 } from "three";
 
 const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
@@ -30,6 +31,7 @@ export default class AnimationEngine {
             : 1;
         this.avatarPath = normalizedOptions.avatarPath ?? "/avatar.vrm";
         this.currentAvatarPath = this.avatarPath;
+        this.displayMode = normalizedOptions.displayMode === "landmark" ? "landmark" : "vrm";
         this.avatarSwitching = false;
         this.handCorrection = normalizedOptions.handCorrection;
         this.currentGloss = null;
@@ -54,6 +56,8 @@ export default class AnimationEngine {
             getCameraZoom: () => 0,
             setAvatar: async () => null,
             getAvatarPath: () => this.currentAvatarPath,
+            setDisplayMode: (mode) => this.setDisplayMode(mode),
+            getDisplayMode: () => this.displayMode,
             setBackgroundTheme: () => "midnight",
             getBackgroundTheme: () => "midnight",
             setAutoRotate: () => false,
@@ -84,6 +88,9 @@ export default class AnimationEngine {
             this.landmarkOverlay = new LandmarkSkeletonOverlay(
                 this.sceneManager.scene
             );
+            this.landmarkAvatar = new LandmarkAvatar(
+                this.sceneManager.scene
+            );
 
             this.setStatus("Loading avatar...");
 
@@ -94,6 +101,7 @@ export default class AnimationEngine {
             console.log("VRM Loaded:", vrm);
 
             this.sceneManager.scene.add(vrm.scene);
+            vrm.scene.visible = this.displayMode === "vrm";
             this.avatarPosition.copy(vrm.scene.position);
             this.currentAvatarPath = this.avatarPath;
             console.log("Avatar added to scene.");
@@ -146,6 +154,7 @@ export default class AnimationEngine {
             this.motionPlayer.setLoop(true);
             this.motionPlayer.setFrameListener((frame, frameIndex) => {
                 this.landmarkOverlay?.updateFrame(frameIndex);
+                this.landmarkAvatar?.updateFrame(frameIndex);
             });
             this.motionPlayer.setEndListener(() => {
                 void this.advanceSequence();
@@ -175,6 +184,7 @@ export default class AnimationEngine {
                     this.motionPlayer.stop();
                     this.motionPlayer.play();
                     this.landmarkOverlay?.updateFrame(0);
+                    this.landmarkAvatar?.updateFrame(0);
 
                 },
                 setSpeed: (speed) => {
@@ -188,6 +198,8 @@ export default class AnimationEngine {
                 getCameraZoom: () => this.sceneManager?.getZoom() ?? 0,
                 setAvatar: (avatarPath) => this.setAvatar(avatarPath),
                 getAvatarPath: () => this.currentAvatarPath,
+                setDisplayMode: (mode) => this.setDisplayMode(mode),
+                getDisplayMode: () => this.displayMode,
                 setBackgroundTheme: (themeId) => this.sceneManager?.setBackgroundTheme(themeId) ?? "midnight",
                 getBackgroundTheme: () => this.sceneManager?.getBackgroundTheme() ?? "midnight",
                 setAutoRotate: (enabled) => this.sceneManager?.setAutoRotate(enabled) ?? false,
@@ -248,6 +260,7 @@ export default class AnimationEngine {
             };
 
             await this.syncLandmarkOverlay(this.motionLoader.getMotion());
+            this.setDisplayMode(this.displayMode);
 
             this.motionPlayer.play();
             this.animationLoop.start();
@@ -318,6 +331,7 @@ export default class AnimationEngine {
             }
 
             this.landmarkOverlay?.updateFrame(0);
+            this.landmarkAvatar?.updateFrame(0);
 
             const previewSuffix = motion.isPreview ? " (preview)" : "";
 
@@ -333,6 +347,7 @@ export default class AnimationEngine {
             console.error(error);
             this.setStatus(`Failed to load ${gloss}`);
             this.landmarkOverlay?.clear();
+            this.landmarkAvatar?.clearMotion();
 
             return null;
 
@@ -465,21 +480,45 @@ export default class AnimationEngine {
 
     async syncLandmarkOverlay(motion) {
 
-        if (!this.landmarkOverlay) {
+        if (!this.landmarkOverlay && !this.landmarkAvatar) {
             return null;
         }
 
-        try {
-            return await this.landmarkOverlay.loadMotion(motion);
+        const results = await Promise.all([
+            this.landmarkOverlay
+                ? this.landmarkOverlay.loadMotion(motion).catch((error) => {
+                    console.warn(error);
+                    this.landmarkOverlay.clear();
+                    return null;
+                })
+                : Promise.resolve(null),
+            this.landmarkAvatar
+                ? this.landmarkAvatar.loadMotion(motion).catch((error) => {
+                    console.warn(error);
+                    this.landmarkAvatar.clearMotion();
+                    return null;
+                })
+                : Promise.resolve(null)
+        ]);
+
+        return results.find(Boolean) ?? null;
+
+    }
+
+    setDisplayMode(mode) {
+        this.displayMode = mode === "landmark" ? "landmark" : "vrm";
+
+        const vrmScene = this.avatarLoader?.getVRM()?.scene;
+        if (vrmScene) {
+            vrmScene.visible = this.displayMode === "vrm";
         }
-        catch (error) {
 
-            console.warn(error);
-            this.landmarkOverlay.clear();
-            return null;
+        // The 3D landmark avatar replaces the debug points and lines while
+        // active, so the stage shows one representation at a time.
+        this.landmarkOverlay?.setVisible(false);
+        this.landmarkAvatar?.setVisible(this.displayMode === "landmark");
 
-        }
-
+        return this.displayMode;
     }
 
     alignLandmarkOverlay() {
@@ -493,6 +532,9 @@ export default class AnimationEngine {
         pelvis.updateWorldMatrix(true, false);
 
         this.landmarkOverlay.setRootPosition(
+            pelvis.getWorldPosition(new Vector3())
+        );
+        this.landmarkAvatar?.setRootPosition(
             pelvis.getWorldPosition(new Vector3())
         );
 
@@ -536,6 +578,7 @@ export default class AnimationEngine {
 
         try {
             const nextVRM = await this.avatarLoader.load(normalizedPath);
+            nextVRM.scene.visible = this.displayMode === "vrm";
             nextVRM.scene.position.copy(this.avatarPosition);
             this.sceneManager.scene.remove(previousVRM?.scene);
             this.sceneManager.scene.add(nextVRM.scene);
@@ -718,6 +761,10 @@ export default class AnimationEngine {
 
         if (this.landmarkOverlay) {
             this.landmarkOverlay.dispose();
+        }
+
+        if (this.landmarkAvatar) {
+            this.landmarkAvatar.dispose();
         }
 
         if (this.renderer) {

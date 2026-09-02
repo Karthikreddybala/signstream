@@ -48,6 +48,7 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
     const [backgroundTheme, setBackgroundTheme] = useState(() => getStoredBackgroundTheme());
     const [backgroundMenuOpen, setBackgroundMenuOpen] = useState(false);
     const [autoRotate, setAutoRotate] = useState(false);
+    const [displayMode, setDisplayMode] = useState("vrm");
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [avatarCatalog, setAvatarCatalog] = useState([]);
     const [selectedAvatarPath, setSelectedAvatarPath] = useState("");
@@ -85,9 +86,13 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
             const initialZoom = Number(controls?.getCameraZoom?.());
             const initialPosition = controls?.getAvatarPosition?.();
             const initialAutoRotate = controls?.getAutoRotate?.();
+            const initialDisplayMode = controls?.getDisplayMode?.();
             if (Number.isFinite(initialZoom) && initialZoom > 0) setZoom(initialZoom);
             controls?.setBackgroundTheme?.(initialBackgroundRef.current);
             if (typeof initialAutoRotate === "boolean") setAutoRotate(initialAutoRotate);
+            if (initialDisplayMode === "landmark" || initialDisplayMode === "vrm") {
+                setDisplayMode(initialDisplayMode);
+            }
             if (initialPosition) {
                 setAvatarPosition({
                     x: Number(initialPosition.x) || 0,
@@ -109,6 +114,7 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
                 setAvatarPosition: (position) => engine.getControls()?.setAvatarPosition?.(position),
                 setBackgroundTheme: (themeId) => engine.getControls()?.setBackgroundTheme?.(themeId),
                 setAutoRotate: (enabled) => engine.getControls()?.setAutoRotate?.(enabled),
+                setDisplayMode: (mode) => engine.getControls()?.setDisplayMode?.(mode),
                 setAvatar: (avatarPath) => engine.getControls()?.setAvatar?.(avatarPath),
                 toggleFullscreen
             });
@@ -174,6 +180,11 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
     const handleCameraView = (viewName) => {
         setCameraView(viewName);
         engineRef.current?.getControls()?.setCameraView?.(viewName);
+    };
+
+    const handleDisplayMode = (mode) => {
+        setDisplayMode(mode);
+        engineRef.current?.getControls()?.setDisplayMode?.(mode);
     };
 
     const handleSpeed = (event) => {
@@ -321,6 +332,26 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
                             ))}
                         </div>
                     </div>
+                    <div className="avatar-stage-view-control">
+                        <span className="avatar-stage-label">Display</span>
+                        <div className="avatar-view-buttons" aria-label="Display mode">
+                            {[
+                                ["vrm", "VRM"],
+                                ["landmark", "Landmark"]
+                            ].map(([value, label]) => (
+                                <button
+                                    className={`avatar-view-button ${displayMode === value ? "active" : ""}`}
+                                    key={value}
+                                    type="button"
+                                    aria-pressed={displayMode === value}
+                                    onClick={() => handleDisplayMode(value)}
+                                    disabled={!ready}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     <div className="avatar-stage-actions">
                         <button className={`stage-icon-button ${autoRotate ? "active" : ""}`} type="button" aria-label="Toggle auto rotate" aria-pressed={autoRotate} onClick={handleAutoRotate} disabled={!ready} title="Auto rotate">
                             <RotateCw size={14} />
@@ -348,7 +379,9 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
                 <div className="avatar-stage-hint"><span className="status-dot status-dot-green" /> Drag to orbit <span>•</span> Scroll to zoom</div>
                 <div className="avatar-stage-badge">
                     <span className="status-dot status-dot-green" />
-                    {selectedGloss || "Preview motion"}
+                    {displayMode === "landmark"
+                        ? `${selectedGloss || "Preview motion"} · Landmark`
+                        : selectedGloss || "Preview motion"}
                 </div>
             </div>
             <div className="avatar-library-control">
