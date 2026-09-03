@@ -337,7 +337,7 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
                         <div className="avatar-view-buttons" aria-label="Display mode">
                             {[
                                 ["vrm", "VRM"],
-                                ["landmark", "Landmark"]
+                                ["landmark", "Landmark Skin"]
                             ].map(([value, label]) => (
                                 <button
                                     className={`avatar-view-button ${displayMode === value ? "active" : ""}`}
@@ -380,7 +380,7 @@ function AvatarViewport({ selectedGloss, sequenceGlosses = [], sequenceLoop = tr
                 <div className="avatar-stage-badge">
                     <span className="status-dot status-dot-green" />
                     {displayMode === "landmark"
-                        ? `${selectedGloss || "Preview motion"} · Landmark`
+                        ? `${selectedGloss || "Preview motion"} · Landmark Skin`
                         : selectedGloss || "Preview motion"}
                 </div>
             </div>

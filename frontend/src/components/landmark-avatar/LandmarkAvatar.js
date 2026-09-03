@@ -383,7 +383,7 @@ export default class LandmarkAvatar {
 
         this.addStaticVolume(
             hipCenter,
-            [hipWidth * 0.72, hipWidth * 0.5, hipWidth * 0.62],
+            [hipWidth * 0.58, hipWidth * 0.42, hipWidth * 0.5],
             this.materials.body,
             "StaticLandmarkPelvis"
         );
