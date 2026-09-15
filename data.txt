@@ -5,7 +5,7 @@ Structured JSON gloss responses are used, matching the providers’ structured-o
 Added manifest validation so unknown glosses are reported instead of requesting missing motion files.
 Preserved ordered/repeated gloss playback through the existing avatar queue.
 Added TXT, DOCX, PDF extraction and secure upload validation in backend/app/input_processing.py.
-Image files are validated; OCR is not enabled yet.
+Image files are validated; provider-backed OCR is available when Gemini or OpenAI is configured.
 Speech permission remains browser-controlled; speech-to-text is not yet implemented.
 Improved finger retargeting by using actual VRM rest geometry and hand-local coordinate axes in frontend/src/animation/HandPoseCorrector.js:168.
 Body mapping and the existing animation architecture were not replaced.
@@ -18,7 +18,7 @@ notepad .env
 Use one provider:
 LLM_PROVIDER=gemini
 GEMINI_API_KEY=your_key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.6-flash
 or:
 LLM_PROVIDER=openai
 OPENAI_API_KEY=your_key
@@ -54,7 +54,7 @@ Frontend production build: passed.
 Mocked Gemini/OpenAI provider tests: passed.
 Upload rejection and unknown-gloss tests: passed.
 Finger landmark mapping test: passed.
-Remaining limitations are OCR, speech-to-text, exported video rendering, and database migrations.
+Remaining limitations are local/offline OCR, local/offline speech-to-text, exported video rendering, and database migrations.
 
 Edited 19 files+616-52Review changesUndoReview
 

@@ -56,6 +56,21 @@ converter/output/
 frontend/public/motion/
 frontend/public/motion.zip
 
+# Generated paper and project-documentation artifacts
+SignStream_IEEE_Research_Paper.docx
+SignStream_Project_Documentation.docx
+B20_doc_reference.docx
+*_IEEE_Research_Paper.docx
+*_Project_Documentation.docx
+*_doc_reference.docx
+documentation_qa/
+paper_qa_final/
+.docx_deps/
+build_signstream_documentation.py
+revise_signstream_paper.py
+inspect_docx_structure.py
+summarize_b20.py
+
 # Logs and temporary files
 logs/
 *.log

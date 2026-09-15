@@ -363,8 +363,10 @@ function WorkflowPage({ kind }) {
                 return;
             }
             setMessage("The source was processed, but no readable text was found.");
-        } catch {
-            setMessage("API unavailable; the selected source is ready for local review.");
+        } catch (error) {
+            const detail = error?.response?.data?.detail;
+            const providerMessage = typeof detail === "object" ? detail.message : detail;
+            setMessage(providerMessage || "API unavailable; the selected source is ready for local review.");
         } finally {
             setStarted(true);
             setProcessing(false);

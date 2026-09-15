@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -37,8 +39,11 @@ def test_openai_provider_parses_structured_response() -> None:
 def test_gemini_provider_parses_structured_response() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         assert request.headers["x-goog-api-key"] == "test-key"
-        body = request.read().decode("utf-8")
-        assert "responseMimeType" in body
+        body = json.loads(request.read())
+        schema = body["generationConfig"]["responseSchema"]
+        assert schema["type"] == "OBJECT"
+        assert schema["properties"]["glosses"]["type"] == "ARRAY"
+        assert "additionalProperties" not in schema
         return httpx.Response(200, json={
             "candidates": [{
                 "content": {"parts": [{"text": '{"glosses":["HELLO"]}'}]}

@@ -25,6 +25,20 @@ GLOSS_SCHEMA = {
     "additionalProperties": False
 }
 
+# Gemini's responseSchema uses its own Schema format. It does not accept
+# JSON Schema's additionalProperties field or the lowercase type names used
+# by OpenAI's json_schema response format.
+GEMINI_GLOSS_SCHEMA = {
+    "type": "OBJECT",
+    "properties": {
+        "glosses": {
+            "type": "ARRAY",
+            "items": {"type": "STRING"}
+        }
+    },
+    "required": ["glosses"]
+}
+
 _STATS_LOCK = Lock()
 _PROVIDER_STATS: dict[str, dict[str, Any]] = {}
 
@@ -453,7 +467,7 @@ class GeminiProvider(HTTPGlossProvider):
                 "generationConfig": {
                     "temperature": 0,
                     "responseMimeType": "application/json",
-                    "responseSchema": GLOSS_SCHEMA
+                    "responseSchema": GEMINI_GLOSS_SCHEMA
                 }
             }
             payload = self.request(

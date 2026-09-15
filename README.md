@@ -2,6 +2,11 @@
 
 SignStream is a browser-based sign language workspace built around the existing Three.js VRM animation engine.
 
+## Learning documents
+
+- [Complete project report](PROJECT_REPORT.md)
+- [From-zero engineering guide](PROJECT_FROM_ZERO_ENGINEERING_GUIDE.md)
+
 ## Local development
 
 Start the API from the project root:
