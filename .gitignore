@@ -59,17 +59,21 @@ frontend/public/motion.zip
 # Generated paper and project-documentation artifacts
 SignStream_IEEE_Research_Paper.docx
 SignStream_Project_Documentation.docx
+SignStream_Project_Documentation_Updated.docx
 B20_doc_reference.docx
 *_IEEE_Research_Paper.docx
 *_Project_Documentation.docx
 *_doc_reference.docx
 documentation_qa/
+documentation_qa_updated/
 paper_qa_final/
 .docx_deps/
+docx_runtime/
 build_signstream_documentation.py
 revise_signstream_paper.py
 inspect_docx_structure.py
 summarize_b20.py
+update_signstream_documentation.ps1
 
 # Logs and temporary files
 logs/

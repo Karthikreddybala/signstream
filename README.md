@@ -4,8 +4,10 @@ SignStream is a browser-based sign language workspace built around the existing 
 
 ## Learning documents
 
-- [Complete project report](PROJECT_REPORT.md)
-- [From-zero engineering guide](PROJECT_FROM_ZERO_ENGINEERING_GUIDE.md)
+The complete report, engineering guide, research paper, and supporting documentation
+are stored outside this repository in:
+
+`C:\Users\saket\major_project\documentation_and_research\documents`
 
 ## Local development
 

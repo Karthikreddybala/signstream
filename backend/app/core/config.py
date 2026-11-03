@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     max_text_characters: int = 10_000
     llm_provider: str = "auto"
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-3.6-flash"
+    gemini_model: str = "gemini-3.5-flash-lite"
     openai_api_key: str = ""
     openai_model: str = "gpt-4o-mini"
     openai_transcription_model: str = "whisper-1"
